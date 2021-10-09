@@ -27,7 +27,7 @@ module.exports = class Bot {
 			}
 
 			let ottGuild = Bot.client.guilds.cache.find(g => g.id == "761013040204218418");
-			bot.#nsfwCategories[ottGuild.id] = ottGuild.channels.cache.find(c => c.id == "781690974446813205");
+			bot.#nsfwCategories[ottGuild.id] = [ ottGuild.channels.cache.find(c => c.id == "781690974446813205"), ottGuild.channels.cache.find(c => c.id == "781691095833772072") ];
 		});
 
 
@@ -84,19 +84,25 @@ module.exports = class Bot {
 		let guild = btn.channel.guild;
 		if (btn.id.match(/.*-join-nsfw$/)) {
 			console.log("Join");
-			this.#nsfwCategories[guild.id].updateOverwrite(btn.clicker.user, {
-				'VIEW_CHANNEL': true,
-				'CONNECT' : true,
-			}).then(c => console.log(c.permissionOverwrites.get(btn.clicker.user.id)))
+			this.#nsfwCategories[guild.id].forEach(channel => {
+				channel.updateOverwrite(btn.clicker.user, {
+					'VIEW_CHANNEL': true,
+					'CONNECT' : true,
+				})
+				.then(c => console.log(c.permissionOverwrites.get(btn.clicker.user.id)))
 				.catch(console.error);
+			});
 		}
 		if (btn.id.match(/.*-leave-nsfw$/)) {
 			console.log("Leave");
-			this.#nsfwCategories[guild.id].updateOverwrite(btn.clicker.user, {
-				'VIEW_CHANNEL': false,
-				'CONNECT' : false,
-			}).then(c => console.log(c.permissionOverwrites.get(btn.clicker.user.id)))
+			this.#nsfwCategories[guild.id].forEach(channel => {
+				channel.updateOverwrite(btn.clicker.user, {
+					'VIEW_CHANNEL': false,
+					'CONNECT' : false,
+				})
+				.then(c => console.log(c.permissionOverwrites.get(btn.clicker.user.id)))
 				.catch(console.error);
+			});
 		}
 	}
 
